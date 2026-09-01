@@ -1,0 +1,43 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <RootNamespace>Announcer</RootNamespace>
+    <AssemblyName>Announcer</AssemblyName>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <PackageId>Announcer</PackageId>
+    <Version>0.1.0</Version>
+    <Authors>Trond Bordewich</Authors>
+    <Description>.NET SDK for Announcer — send transactional email from your own domain, DKIM-signed.</Description>
+    <PackageTags>announcer;email;transactional-email;smtp;dkim;webhooks</PackageTags>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://misralo.com</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/ZeldaIV/announcer-dotnet</RepositoryUrl>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="../../README.md" Pack="true" PackagePath="/" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Brings IHttpClientFactory and the DI abstractions, so AddAnnouncer works
+         out of the box in any ASP.NET Core or Generic Host app. -->
+    <PackageReference Include="Microsoft.Extensions.Http" Version="8.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Options" Version="8.0.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Announcer.Tests" />
+  </ItemGroup>
+
+</Project>
