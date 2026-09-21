@@ -342,18 +342,6 @@ var key = await announcer.ApiKeys.CreateAsync("production-worker", KeyScope.Send
 A leaked send key cannot register domains, mint successor keys, or touch
 billing. It is the difference between an incident and a catastrophe.
 
-## Local development
-
-Point the SDK at a local Announcer stack:
-
-```csharp
-var announcer = new AnnouncerClient(new AnnouncerOptions
-{
-    ApiKey = "ann_dev_0000000000000000000000000000",
-    BaseUrl = "http://localhost:8080",
-});
-```
-
 ## Contributing
 
 ```bash

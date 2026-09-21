@@ -17,8 +17,7 @@ public sealed class AnnouncerOptions
 
     /// <summary>
     /// API root. Falls back to <c>ANNOUNCER_BASE_URL</c>, then
-    /// <see cref="DefaultBaseUrl"/>. Point it at <c>http://localhost:8080</c>
-    /// for a local stack.
+    /// <see cref="DefaultBaseUrl"/>.
     /// </summary>
     public string? BaseUrl { get; set; }
 
