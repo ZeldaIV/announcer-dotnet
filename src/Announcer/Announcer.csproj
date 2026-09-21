@@ -13,7 +13,7 @@
 
   <PropertyGroup>
     <PackageId>Announcer</PackageId>
-    <Version>0.1.0</Version>
+    <Version>0.1.1</Version>
     <Authors>Trond Bordewich</Authors>
     <Description>.NET SDK for Announcer — send transactional email from your own domain, DKIM-signed.</Description>
     <PackageTags>announcer;email;transactional-email;smtp;dkim;webhooks</PackageTags>

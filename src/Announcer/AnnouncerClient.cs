@@ -29,7 +29,7 @@ namespace Announcer;
 public sealed class AnnouncerClient : IDisposable
 {
     /// <summary>This SDK's version, reported in the User-Agent.</summary>
-    public const string Version = "0.1.0";
+    public const string Version = "0.1.1";
 
     private const int MaxRetryAfterSeconds = 60;
     private static readonly TimeSpan MaxBackoff = TimeSpan.FromSeconds(8);
