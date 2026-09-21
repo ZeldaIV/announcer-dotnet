@@ -1,0 +1,55 @@
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: |
+            8.0.x
+            9.0.x
+      - name: Check tag matches Announcer.csproj
+        run: |
+          version=$(sed -n 's:.*<Version>\(.*\)</Version>.*:\1:p' src/Announcer/Announcer.csproj)
+          test "${GITHUB_REF_NAME#v}" = "$version"
+      - run: dotnet restore
+      - run: dotnet build --no-restore -c Release
+      - run: dotnet test --no-build -c Release
+      - run: dotnet pack --no-build -c Release -o artifacts
+      - uses: actions/upload-artifact@v7
+        with:
+          name: packages
+          path: artifacts/
+
+  publish:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: nuget
+      url: https://www.nuget.org/packages/Announcer
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: '9.0.x'
+      - uses: actions/download-artifact@v8
+        with:
+          name: packages
+          path: artifacts/
+      - uses: NuGet/login@v1
+        id: login
+        with:
+          # nuget.org profile name (not email), set as a repository variable.
+          user: ${{ vars.NUGET_USER }}
+      # Pushing the .nupkg also pushes the .snupkg symbols beside it.
+      - run: dotnet nuget push "artifacts/*.nupkg" --api-key "${{ steps.login.outputs.NUGET_API_KEY }}" --source https://api.nuget.org/v3/index.json
