@@ -149,6 +149,23 @@ var forCustomer = template with { To = customer.Email, Subject = "September upda
 `To`, `Cc` and `Bcc` are `Addresses`, which converts implicitly from `string`
 and `string[]` — see [Several recipients](#several-recipients).
 
+## Attachments
+
+Pass the file's bytes; System.Text.Json does the base64.
+
+```csharp
+await announcer.SendAsync(new SendEmailRequest
+{
+    From = "billing@acme.com",
+    To = "customer@example.com",
+    Subject = "Invoice 1042",
+    Text = "Your invoice is attached.",
+    Attachments = [new Attachment("invoice-1042.pdf", await File.ReadAllBytesAsync("invoice.pdf"))],
+});
+```
+
+At most 20 files and 10 MB per message, text and HTML included. Add a `ContentId` to show an image inline with `<img src="cid:logo">`. Attachments are sent and never stored, and executables are refused.
+
 ## Several recipients
 
 `To`, `Cc` and `Bcc` each take one address or many — `Addresses` converts

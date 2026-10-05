@@ -114,6 +114,15 @@ public sealed record SendEmailRequest
     public string? Html { get; init; }
 
     /// <summary>
+    /// Files to attach, or images for the HTML to show inline. At most 20, and
+    /// 10 MB per message in all, text and HTML included. Executables
+    /// (<c>.exe</c>, <c>.js</c>, <c>.bat</c>, ...) are refused, because Gmail
+    /// and most mail servers would refuse them anyway.
+    /// </summary>
+    [JsonPropertyName("attachments")]
+    public IReadOnlyList<Attachment>? Attachments { get; init; }
+
+    /// <summary>
     /// Makes the send exactly-once. Left null, the SDK generates one per call
     /// so its own retries cannot double-send; set it yourself — an order id, a
     /// job id — to keep that guarantee across process restarts. Travels as a
@@ -121,6 +130,34 @@ public sealed record SendEmailRequest
     /// </summary>
     [JsonIgnore]
     public string? IdempotencyKey { get; init; }
+}
+
+/// <summary>
+/// A file to attach, or an image for the HTML to show inline. Attachments are
+/// sent and never stored: not their contents, and not their names.
+/// <code>
+/// new Attachment("invoice-1042.pdf", await File.ReadAllBytesAsync("invoice.pdf"))
+/// </code>
+/// </summary>
+/// <param name="Filename">The name the recipient sees, with its extension.</param>
+/// <param name="Content">
+/// The file's bytes. System.Text.Json writes a <c>byte[]</c> as base64, which
+/// is what the API takes.
+/// </param>
+public sealed record Attachment(
+    [property: JsonPropertyName("filename")] string Filename,
+    [property: JsonPropertyName("content")] byte[] Content)
+{
+    /// <summary>The media type. Guessed from <see cref="Filename"/> when null.</summary>
+    [JsonPropertyName("content_type")]
+    public string? ContentType { get; init; }
+
+    /// <summary>
+    /// Makes this an inline image: the HTML shows it as
+    /// <c>&lt;img src="cid:logo"&gt;</c> when this is <c>"logo"</c>.
+    /// </summary>
+    [JsonPropertyName("content_id")]
+    public string? ContentId { get; init; }
 }
 
 /// <summary>The result of a successful send.</summary>
@@ -180,6 +217,9 @@ public sealed record Message
 
     /// <summary>How many addresses the message went to, across To, Cc and Bcc.</summary>
     [JsonPropertyName("recipient_count")] public int RecipientCount { get; init; } = 1;
+
+    /// <summary>How many files were attached. Their names and contents are not kept.</summary>
+    [JsonPropertyName("attachment_count")] public int AttachmentCount { get; init; }
 
     /// <summary>The <c>Reply-To:</c> header that went out, if any.</summary>
     [JsonPropertyName("reply_to")] public string? ReplyTo { get; init; }

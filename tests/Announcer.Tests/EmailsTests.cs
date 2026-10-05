@@ -56,6 +56,27 @@ public class EmailsTests
     }
 
     [Fact]
+    public async Task SendAsync_EncodesAttachmentsAsBase64()
+    {
+        var (client, handler) = TestClient.Create("""{"id":"m","status":"sent"}""");
+
+        await client.SendAsync(Basic with
+        {
+            Attachments =
+            [
+                new Attachment("a.pdf", [0x25, 0x50, 0x44, 0x46, 0x00, 0xff]),
+                new Attachment("logo.png", "png"u8.ToArray()) { ContentType = "image/png", ContentId = "logo" },
+            ],
+        });
+
+        using var body = JsonDocument.Parse(handler.Calls[0].Body!);
+        var attachments = body.RootElement.GetProperty("attachments");
+        Assert.Equal(
+            """[{"filename":"a.pdf","content":"JVBERgD/"},{"filename":"logo.png","content":"cG5n","content_type":"image/png","content_id":"logo"}]""",
+            attachments.GetRawText());
+    }
+
+    [Fact]
     public async Task SendAsync_GeneratesAnIdempotencyKey()
     {
         var (client, handler) = TestClient.Create("""{"id":"m","status":"sent"}""");
@@ -204,6 +225,7 @@ public class EmailsTests
                 Body = """
                 [{"id":"m1","message_id":"<x@acme.test>","header_from":"billing@acme.test",
                   "recipient":"customer@example.com","recipient_count":3,"reply_to":"support@acme.test",
+                  "attachment_count":2,
                   "subject":"Receipt","status":"delivered","created_at":"2026-09-01T10:00:00Z"}]
                 """,
             },
@@ -226,6 +248,7 @@ public class EmailsTests
         Assert.Equal(2026, message.CreatedAt.Year);
         // `To` is the primary; the total lives alongside it.
         Assert.Equal(3, message.RecipientCount);
+        Assert.Equal(2, message.AttachmentCount);
         Assert.Equal("support@acme.test", message.ReplyTo);
     }
 
