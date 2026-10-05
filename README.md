@@ -135,7 +135,8 @@ derive from `AnnouncerException`, and every one carries `StatusCode` and
 `RequestId`.
 
 **Field names make sense.** The API calls them `header_from` and `recipient`;
-the SDK calls them `From` and `To`, matching what you used to send. Timestamps
+the SDK calls them `From` and `To`, matching what you used to send, and
+`AttachmentCount` says how many files a message carried. Timestamps
 are `DateTimeOffset`, nullable ones are `DateTimeOffset?`, and the booleans you
 want are computed: `domain.Verified`, `key.Revoked`, `endpoint.Disabled`.
 
@@ -327,7 +328,7 @@ Every async method takes an optional `CancellationToken`.
 |------|------|
 | `SendAsync(msg)` | Shorthand for `Emails.SendAsync`. |
 | `GetUsageAsync()` | Quota consumption plus a 14-day sending series. |
-| `Emails.SendAsync(msg)` | Sends one email. `To`/`Cc`/`Bcc` take one address or many. |
+| `Emails.SendAsync(msg)` | Sends one email. `To`/`Cc`/`Bcc` take one address or many; `Attachments` take the file's bytes. |
 | `Emails.SendManyAsync(to, msg, stopOnError)` | Separate emails, one per recipient. |
 | `Emails.ListAsync(options)` | Send history. |
 | `Emails.GetEventsAsync(id)` | A message's audit trail. |
